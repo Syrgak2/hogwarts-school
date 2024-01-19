@@ -41,8 +41,7 @@ public class FacultyService {
 
     public List<Faculty> filterFacultyByColor(String color) {
         List<Faculty> tmp = new ArrayList<>();
-        for (long i = 1; i <= lastId; i++) {
-            Faculty faculty = facultyMap.get(i);
+        for (Faculty faculty : facultyMap.values()) {
             if (faculty.getColor().equals(color)) {
                 tmp.add(faculty);
             }

@@ -1,11 +1,12 @@
 package ru.hogwarts.school.controller;
 
-import org.apache.catalina.valves.StuckThreadDetectionValve;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.service.StudentService;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -49,8 +50,11 @@ public class StudentController {
         return ResponseEntity.ok(student);
     }
 
-    @GetMapping("/filter/{age}")
-    public List<Student> filterByAge(@PathVariable int age) {
-        return service.filterStudentByAge(age);
+    @GetMapping
+    public ResponseEntity<List<Student>> filterByAge(@RequestParam(required = false) int age) {
+        if (age > 0) {
+            return ResponseEntity.ok(service.filterStudentByAge(age));
+        }
+        return ResponseEntity.ok(Collections.emptyList());
     }
 }

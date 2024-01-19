@@ -40,8 +40,7 @@ public class StudentService {
 
     public List<Student> filterStudentByAge(int age) {
         List<Student> tmp = new ArrayList<>();
-        for (long i = 1; i <= lastId; i++) {
-            Student student = studentMap.get(i);
+        for (Student student : studentMap.values()) {
             if (student.getAge() == age) {
                 tmp.add(student);
             }
