@@ -20,7 +20,7 @@ public class FacultyService {
         return faculty;
     }
 
-    public Faculty findeFaculty(Long id) {
+    public Faculty findFaculty(Long id) {
         return facultyMap.get(id);
     }
 
@@ -41,7 +41,7 @@ public class FacultyService {
 
     public List<Faculty> filterFacultyByColor(String color) {
         List<Faculty> tmp = new ArrayList<>();
-        for (long i = 1; i < lastId; i++) {
+        for (long i = 1; i <= lastId; i++) {
             Faculty faculty = facultyMap.get(i);
             if (faculty.getColor().equals(color)) {
                 tmp.add(faculty);
