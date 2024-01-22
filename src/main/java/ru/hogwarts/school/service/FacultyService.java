@@ -1,51 +1,46 @@
 package ru.hogwarts.school.service;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import ru.hogwarts.school.controller.FacultyController;
 import ru.hogwarts.school.model.Faculty;
+import ru.hogwarts.school.repository.FacultyRepository;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class FacultyService {
-    private final Map<Long, Faculty> facultyMap = new HashMap<>();
+    private FacultyRepository facultyRepo;
 
-    private long lastId = 0;
+    public FacultyService(FacultyRepository facultyRepository) {
+        this.facultyRepo = facultyRepository;
+    }
 
     public Faculty addFaculty(Faculty faculty) {
-        facultyMap.put(++lastId, faculty);
-        faculty.setId(lastId);
-        return faculty;
+        return facultyRepo.save(faculty);
     }
 
     public Faculty findFaculty(Long id) {
-        return facultyMap.get(id);
+        return facultyRepo.findById(id).get();
     }
 
     public Faculty updateFaculty(Faculty faculty) {
-        if (facultyMap.containsKey(faculty.getId())) {
-            facultyMap.put(faculty.getId(), faculty);
-            return faculty;
-        }
-        return null;
+        return facultyRepo.save(faculty);
     }
 
-    public Faculty removeFaculty(Long id) {
-        if (facultyMap.containsKey(id)) {
-            return facultyMap.remove(id);
-        }
-        return null;
+    public void removeFaculty(Long id) {
+        facultyRepo.deleteById(id);
     }
 
     public List<Faculty> filterFacultyByColor(String color) {
-        List<Faculty> tmp = new ArrayList<>();
-        for (Faculty faculty : facultyMap.values()) {
-            if (faculty.getColor().equals(color)) {
-                tmp.add(faculty);
-            }
-        }
-        return tmp;
+        List<Faculty> faculties = new ArrayList<>(facultyRepo.findAll());
+        return faculties.stream()
+                .filter(e -> e.getColor().equals(color))
+                .collect(Collectors.toList());
     }
 }
