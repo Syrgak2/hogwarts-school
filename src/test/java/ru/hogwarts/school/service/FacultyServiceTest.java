@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static ru.hogwarts.school.constans.Constants.*;
 
@@ -59,7 +60,7 @@ public class FacultyServiceTest {
     @Test
     public void filterFaculty() {
 //        Given
-        when(facultyRepository.findAll()).thenReturn(FACULTY_LIST);
+        when(facultyRepository.findByColor(anyString())).thenReturn(FACULTY_SORTED_LIST);
 //        When
         List<Faculty> excepted = facultyService.filterFacultyByColor(COLOR_FOR_FILTER);
 //        Then

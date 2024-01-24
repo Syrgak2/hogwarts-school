@@ -7,7 +7,7 @@ import jakarta.persistence.Id;
 
 import java.util.Objects;
 
-@Entity
+@Entity(name = "faculties")
 public class Faculty {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

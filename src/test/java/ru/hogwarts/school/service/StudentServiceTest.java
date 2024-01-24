@@ -15,6 +15,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static ru.hogwarts.school.constans.Constants.*;
@@ -59,7 +60,7 @@ public class StudentServiceTest {
     @Test
     public void filterStudent() {
 //        Given
-        when(studentRepository.findAll()).thenReturn(STUDENT_LIST);
+        when(studentRepository.findByAge(anyInt())).thenReturn(STUDENT_SORTED_LIST);
 //        When
         List<Student> excepted = studentService.filterStudentByAge(22);
 //        Then
