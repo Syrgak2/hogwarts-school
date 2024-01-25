@@ -60,9 +60,19 @@ public class FacultyServiceTest {
     @Test
     public void filterFaculty() {
 //        Given
-        when(facultyRepository.findFacultiesByColor(anyString())).thenReturn(FACULTY_SORTED_LIST);
+        when(facultyRepository.findByColorContainsIgnoreCase(anyString())).thenReturn(FACULTY_SORTED_LIST);
 //        When
-        List<Faculty> excepted = facultyService.filterFacultyByColor(COLOR_FOR_FILTER);
+        List<Faculty> excepted = facultyService.getFacultyByColor(COLOR_FOR_FILTER);
+//        Then
+        assertEquals(FACULTY_SORTED_LIST, excepted);
+    }
+
+    @Test
+    public void whenFilterByName() {
+//        Given
+        when(facultyRepository.findByNameContainsIgnoreCase(anyString())).thenReturn(FACULTY_SORTED_LIST);
+//        When
+        List<Faculty> excepted = facultyService.getFacultyByName(NAME_FOR_FILTER);
 //        Then
         assertEquals(FACULTY_SORTED_LIST, excepted);
     }
