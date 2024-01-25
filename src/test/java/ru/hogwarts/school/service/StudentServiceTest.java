@@ -1,12 +1,10 @@
 package ru.hogwarts.school.service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repository.StudentRepository;
 
@@ -60,7 +58,7 @@ public class StudentServiceTest {
     @Test
     public void filterStudent() {
 //        Given
-        when(studentRepository.findByAge(anyInt())).thenReturn(STUDENT_SORTED_LIST);
+        when(studentRepository.findStudentsByAge(anyInt())).thenReturn(STUDENT_SORTED_LIST);
 //        When
         List<Student> excepted = studentService.filterStudentByAge(22);
 //        Then

@@ -60,7 +60,7 @@ public class FacultyServiceTest {
     @Test
     public void filterFaculty() {
 //        Given
-        when(facultyRepository.findByColor(anyString())).thenReturn(FACULTY_SORTED_LIST);
+        when(facultyRepository.findFacultiesByColor(anyString())).thenReturn(FACULTY_SORTED_LIST);
 //        When
         List<Faculty> excepted = facultyService.filterFacultyByColor(COLOR_FOR_FILTER);
 //        Then

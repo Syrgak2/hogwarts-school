@@ -1,17 +1,10 @@
 package ru.hogwarts.school.service;
 
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import ru.hogwarts.school.controller.FacultyController;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.repository.FacultyRepository;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 public class FacultyService {
@@ -38,6 +31,6 @@ public class FacultyService {
     }
 
     public List<Faculty> filterFacultyByColor(String color) {
-        return facultyRepo.findByColor(color);
+        return facultyRepo.findFacultiesByColor(color);
     }
 }

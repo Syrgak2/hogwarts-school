@@ -4,11 +4,7 @@ import org.springframework.stereotype.Service;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repository.StudentRepository;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 public class StudentService {
@@ -35,7 +31,7 @@ public class StudentService {
     }
 
     public List<Student> filterStudentByAge(int age) {
-        return studentRepo.findByAge(age);
+        return studentRepo.findStudentsByAge(age);
     }
 
 }
