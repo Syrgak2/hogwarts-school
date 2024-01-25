@@ -12,8 +12,14 @@ public class Constants {
     public static final Student STUDENT_3 = new Student(3L, "Student2", 22);
     public static final Student STUDENT_FOR_EDITE = new Student(1L, "StudentForUpdate", 25);
 
+    public static final List<Student> STUDENT_SORTED_LIST = new ArrayList<>(List.of(
+            STUDENT_1,
+            STUDENT_3
+    ));
+
     public static final List<Student> STUDENT_LIST = new ArrayList<>(List.of(
             STUDENT_1,
+            STUDENT_2,
             STUDENT_3
     ));
 
@@ -24,8 +30,14 @@ public class Constants {
     public static final Faculty FACULTY_FOR_EDITE = new Faculty(1L, "FacultyForEdite", "black");
     public static final String COLOR_FOR_FILTER = "gold";
 
+    public static final List<Faculty> FACULTY_SORTED_LIST = new ArrayList<>(List.of(
+            FACULTY_1,
+            FACULTY_3
+    ));
+
     public static final List<Faculty> FACULTY_LIST = new ArrayList<>(List.of(
             FACULTY_1,
+            FACULTY_2,
             FACULTY_3
     ));
 
