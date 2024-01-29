@@ -64,4 +64,14 @@ public class StudentServiceTest {
 //        Then
         assertEquals(STUDENT_SORTED_LIST, excepted);
     }
+
+    @Test
+    public void whenFilterBetweenAge() {
+//        Given
+        when(studentRepository.findByAgeBetween(anyInt(), anyInt())).thenReturn(STUDENT_SORTED_LIST);
+//        When
+        List<Student> excepted = studentService.findByAgeBetween(10, 22);
+//        Then
+        assertEquals(STUDENT_SORTED_LIST, excepted);
+    }
 }

@@ -3,6 +3,7 @@ package ru.hogwarts.school.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.hogwarts.school.model.Faculty;
+import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.service.FacultyService;
 
 import java.util.Collections;
@@ -48,9 +49,21 @@ public class FacultyController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Faculty>> filterByColor(@RequestParam(required = false) String color) {
+    public ResponseEntity<List<Faculty>> filterByColor(@RequestParam(required = false) String color,
+                                                       @RequestParam(required = false) String name) {
         if (color != null && !color.isBlank()) {
-            return ResponseEntity.ok(service.filterFacultyByColor(color));
+            return ResponseEntity.ok(service.getFacultiesByColor(color));
+        }
+        if (name != null && !name.isBlank()) {
+            return ResponseEntity.ok(service.getFacultiesByName(name));
+        }
+        return ResponseEntity.ok(Collections.emptyList());
+    }
+
+    @GetMapping("/{id}/students")
+    public ResponseEntity<List<Student>> getStudents(@PathVariable Long id) {
+        if (id != null) {
+            return ResponseEntity.ok(service.getStudents(id));
         }
         return ResponseEntity.ok(Collections.emptyList());
     }

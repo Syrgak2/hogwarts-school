@@ -26,9 +26,10 @@ public class Constants {
 
     public static final Faculty FACULTY_1 = new Faculty(1L, "Faculty1", "gold");
     public static final Faculty FACULTY_2 = new Faculty(2L, "Faculty2", "blue");
-    public static final Faculty FACULTY_3 = new Faculty(3L, "Faculty3", "gold");
+    public static final Faculty FACULTY_3 = new Faculty(3L, "Faculty1", "gold");
     public static final Faculty FACULTY_FOR_EDITE = new Faculty(1L, "FacultyForEdite", "black");
     public static final String COLOR_FOR_FILTER = "gold";
+    public static final String NAME_FOR_FILTER = "Faculty1";
 
     public static final List<Faculty> FACULTY_SORTED_LIST = new ArrayList<>(List.of(
             FACULTY_1,
