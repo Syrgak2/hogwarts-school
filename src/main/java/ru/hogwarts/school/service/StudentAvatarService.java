@@ -1,7 +1,9 @@
 package ru.hogwarts.school.service;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.hogwarts.school.model.Student;
@@ -58,6 +60,24 @@ public class StudentAvatarService {
         avatarRepo.save(avatar);
     }
 
+    public void getAvatar(Long studentId, HttpServletResponse response) throws IOException {
+        StudentAvatar avatar = findAvatar(studentId);
+
+        Path path = Path.of(avatar.getFilePath());
+
+        try (
+                InputStream is = Files.newInputStream(path);
+                OutputStream os = response.getOutputStream();
+                BufferedInputStream bis = new BufferedInputStream(is, 1024);
+                BufferedOutputStream bos = new BufferedOutputStream(os, 1024);
+        ) {
+            response.setStatus(200);
+            response.setContentType(avatar.getMediaType());
+            response.setContentLength((int) avatar.getFileSize());
+            bis.transferTo(os);
+        }
+    }
+
     public StudentAvatar findAvatar(Long studentId) {
         return avatarRepo.findByStudentId(studentId).orElse(new StudentAvatar());
     }
@@ -78,6 +98,9 @@ public class StudentAvatarService {
             BufferedImage preview = new BufferedImage(100, height, image.getType());
             Graphics2D graphics = preview.createGraphics();
             graphics.drawImage(image, 0, 0, 100, height, null);
+            graphics.dispose();
+
+            ImageIO.write(preview, getExtension(filePath.getFileName().toString()), baos);
             return baos.toByteArray();
         }
     }
