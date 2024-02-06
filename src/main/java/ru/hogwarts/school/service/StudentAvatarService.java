@@ -3,7 +3,6 @@ package ru.hogwarts.school.service;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.hogwarts.school.model.Student;
@@ -35,7 +34,6 @@ public class StudentAvatarService {
     }
 
     public void uploadAvatar(Long studentId, MultipartFile file) throws IOException {
-        Student student = studentService.findStudent(studentId);
 
         Path filePath = Path.of(avatarDir, studentId + "." + getExtension(Objects.requireNonNull(file.getOriginalFilename())));
         Files.createDirectories(filePath.getParent());
@@ -49,15 +47,7 @@ public class StudentAvatarService {
         ) {
             bis.transferTo(bos);
         }
-
-        StudentAvatar avatar = findAvatar(studentId);
-        avatar.setStudent(student);
-        avatar.setFilePath(filePath.toString());
-        avatar.setFileSize(file.getSize());
-        avatar.setMediaType(file.getContentType());
-        avatar.setData(generateImagePreview(filePath));
-
-        avatarRepo.save(avatar);
+        saveAvatarToDataBase(studentId, filePath, file);
     }
 
     public void getAvatar(Long studentId, HttpServletResponse response) throws IOException {
@@ -103,5 +93,18 @@ public class StudentAvatarService {
             ImageIO.write(preview, getExtension(filePath.getFileName().toString()), baos);
             return baos.toByteArray();
         }
+    }
+
+    private void saveAvatarToDataBase(Long studentId, Path filePath, MultipartFile file) throws IOException {
+        Student student = studentService.findStudent(studentId);
+
+        StudentAvatar avatar = findAvatar(studentId);
+        avatar.setStudent(student);
+        avatar.setFilePath(filePath.toString());
+        avatar.setFileSize(file.getSize());
+        avatar.setMediaType(file.getContentType());
+        avatar.setData(generateImagePreview(filePath));
+
+        avatarRepo.save(avatar);
     }
 }
