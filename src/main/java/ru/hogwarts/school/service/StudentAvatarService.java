@@ -72,6 +72,17 @@ public class StudentAvatarService {
         return avatarRepo.findByStudentId(studentId).orElse(new StudentAvatar());
     }
 
+    public Boolean removeAvatar(Long studentId) throws IOException {
+        StudentAvatar avatar = findAvatar(studentId);
+        Path path = Path.of(avatar.getFilePath());
+        try {
+            Files.delete(path);
+            return true;
+        } catch (IOException ignored) {
+            return false;
+        }
+    }
+
     private String getExtension(String fileName) {
         return fileName.substring(fileName.lastIndexOf(".") + 1);
     }
