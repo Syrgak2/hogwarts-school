@@ -1,6 +1,7 @@
 package ru.hogwarts.school;
 
 import org.assertj.core.api.Assertions;
+import org.h2.command.dml.MergeUsing;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -8,20 +9,24 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMessage;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.*;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import ru.hogwarts.school.controller.StudentController;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
+import ru.hogwarts.school.model.StudentAvatar;
 import ru.hogwarts.school.service.FacultyService;
+import ru.hogwarts.school.service.StudentAvatarService;
 import ru.hogwarts.school.service.StudentService;
 
+import javax.swing.plaf.PanelUI;
+import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
-import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static ru.hogwarts.school.constans.Constants.*;
@@ -42,6 +47,9 @@ class SchoolApplicationTests {
 
 	@Autowired
 	FacultyService facultyService;
+
+	@Autowired
+	StudentAvatarService avatarService;
 
 	@Autowired
 	private TestRestTemplate testRestTemplate;
@@ -69,8 +77,7 @@ class SchoolApplicationTests {
 //		Then
 		assertThat(response).isNotNull();
 		assertThat(response.getStatusCode().value()).isEqualTo(200);
-		assertThat(Objects.requireNonNull(response.getBody()).getName()).isEqualTo(STUDENT_1.getName());
-		assertThat(Objects.requireNonNull(response.getBody()).getAge()).isEqualTo(STUDENT_1.getAge());
+		assertThat(Objects.requireNonNull(response.getBody())).isEqualTo(STUDENT_1);
 	}
 
 	@Test
@@ -81,7 +88,7 @@ class SchoolApplicationTests {
 		ResponseEntity<Student> response = testRestTemplate.postForEntity("http://localhost:" + port + "/students", STUDENT_1, Student.class);
 //		Then
 		assertThat(response.getStatusCode().value()).isEqualTo(200);
-		assertThat(Objects.requireNonNull(response.getBody()).getName()).isEqualTo(STUDENT_1.getName());
+		assertThat(Objects.requireNonNull(response.getBody())).isEqualTo(STUDENT_1);
 	}
 
 	@Test
@@ -119,7 +126,7 @@ class SchoolApplicationTests {
 				null,
 				responseType);
 		assertThat(response.getStatusCode().value()).isEqualTo(200);
-		assertEquals(Objects.requireNonNull(response.getBody()).get(0).getName(), STUDENT_2.getName());
+		assertEquals(Objects.requireNonNull(response.getBody()).get(0), STUDENT_2);
 	}
 
 	private void testWhenFilterByMinMaxAge() {
@@ -141,9 +148,67 @@ class SchoolApplicationTests {
 
 //		When
 		ResponseEntity<Faculty> response = testRestTemplate.getForEntity("http://localhost:" + port + "/students/" + STUDENT_4.getId() + "/faculty", Faculty.class);
+//		Then
 		assertThat(response.getStatusCode().value()).isEqualTo(200);
-		assertThat(Objects.requireNonNull(response.getBody()).getName()).isEqualTo(FACULTY_1.getName());
+		assertThat(Objects.requireNonNull(response.getBody())).isEqualTo(FACULTY_1);
+	}
 
+
+//	Тестирует endpoints
+//  /{id}/avatar/post (загрузка avatar)
+//  /{id}/avatar/preview (отправка из базы)
+//	/{id}/avatar (отправка из локального диска)
+	@Test
+	public void testUploadGetFindAvatar() throws IOException {
+//		 Given
+		studentServices.addStudent(STUDENT_4);
+		testUploadAvatar();
+		testDownloadAvatarPreview();
+		testDownloadAvatar();
+
+//		Удаляет файл после теста
+		avatarService.removeAvatar(STUDENT_4.getId());
+
+	}
+
+	private void testUploadAvatar() {
+//		Подготовка тела
+		MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+		body.add("avatar", new ClassPathResource("test-images/1.png"));
+
+//		Подготовка заголовок
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+		HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, httpHeaders);
+
+//		When
+		ResponseEntity<String> response = testRestTemplate.postForEntity(
+				"http://localhost:" + port + "/students/" + STUDENT_4.getId() + "/avatar/post",
+				requestEntity,
+				String.class
+		);
+//		Then
+		assertEquals(HttpStatus.OK, response.getStatusCode());
+	}
+
+
+	private void testDownloadAvatarPreview() {
+		ResponseEntity<byte[]> response = testRestTemplate.getForEntity(
+				"http://localhost:" + port + "/students/" + STUDENT_4.getId() + "/avatar/preview",
+				byte[].class
+		);
+
+		assertEquals(HttpStatus.OK, response.getStatusCode());
+	}
+
+	private void testDownloadAvatar() {
+		ResponseEntity<byte[]> response = testRestTemplate.getForEntity(
+				"http://localhost:" + port + "/students/" + STUDENT_4.getId() + "/avatar",
+				byte[].class
+		);
+
+		assertEquals(HttpStatus.OK, response.getStatusCode());
 	}
 
 }
