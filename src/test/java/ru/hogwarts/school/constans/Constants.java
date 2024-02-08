@@ -34,7 +34,7 @@ public class Constants {
     public static final String COLOR_FOR_FILTER = "gold";
     public static final String NAME_FOR_FILTER = "Faculty1";
 
-    public static final List<Faculty> FACULTY_SORTED_LIST = new ArrayList<>(List.of(
+    public static final List<Faculty> FACULTY_SORTED_BY_COLOR = new ArrayList<>(List.of(
             FACULTY_1,
             FACULTY_3
     ));

@@ -21,6 +21,7 @@ import ru.hogwarts.school.service.StudentAvatarService;
 import ru.hogwarts.school.service.StudentService;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -57,12 +58,16 @@ class StudentControllerTests {
 	}
 
 	@Test
-	public void postStudent() throws Exception{
+	public void testPostStudent() throws Exception{
 //		When
-		ResponseEntity<Student> response = testRestTemplate.postForEntity("http://localhost:" + port + "/students", STUDENT_1, Student.class);
+		ResponseEntity<Student> response = testRestTemplate.postForEntity(
+				"http://localhost:" + port + "/students",
+				STUDENT_1,
+				Student.class
+		);
 //		Then
-		Assertions.assertThat(response).isNotNull();
 		assertThat(response.getStatusCode().value()).isEqualTo(200);
+		assertEquals(response.getBody(), STUDENT_1);
 	}
 
 	@Test
@@ -70,9 +75,11 @@ class StudentControllerTests {
 //		Given
 		studentServices.addStudent(STUDENT_1);
 //		When
-		ResponseEntity<Student> response = testRestTemplate.getForEntity("http://localhost:" + port + "/students/" + STUDENT_1.getId(), Student.class);
+		ResponseEntity<Student> response = testRestTemplate.getForEntity(
+				"http://localhost:" + port + "/students/" + STUDENT_1.getId(),
+				Student.class
+		);
 //		Then
-		assertThat(response).isNotNull();
 		assertThat(response.getStatusCode().value()).isEqualTo(200);
 		assertThat(Objects.requireNonNull(response.getBody())).isEqualTo(STUDENT_1);
 	}
@@ -82,7 +89,10 @@ class StudentControllerTests {
 //		Given
 		studentServices.addStudent(new Student(1L, "jdfskj", 1));
 //		When
-		ResponseEntity<Student> response = testRestTemplate.postForEntity("http://localhost:" + port + "/students", STUDENT_1, Student.class);
+		ResponseEntity<Student> response = testRestTemplate.postForEntity(
+				"http://localhost:" + port + "/students", STUDENT_1,
+				Student.class
+		);
 //		Then
 		assertThat(response.getStatusCode().value()).isEqualTo(200);
 		assertThat(Objects.requireNonNull(response.getBody())).isEqualTo(STUDENT_1);
@@ -95,7 +105,10 @@ class StudentControllerTests {
 //		When
 		testRestTemplate.delete("http://localhost:" + port + "/students/" + STUDENT_1.getId());
 //		Then
-		ResponseEntity<Student> response = testRestTemplate.getForEntity("http://localhost:" + port + "/students/" + STUDENT_1.getId(), Student.class);
+		ResponseEntity<Student> response = testRestTemplate.getForEntity(
+				"http://localhost:" + port + "/students/" + STUDENT_1.getId(),
+				Student.class
+		);
 		assertThat(response.getStatusCode().value()).isEqualTo(500);
 	}
 
@@ -117,23 +130,30 @@ class StudentControllerTests {
 	}
 
 	private void testWhenFilterByAge() {
+//		Given
+		List<Student> excepted = new ArrayList<>();
+		excepted.add(STUDENT_2);
 		ParameterizedTypeReference<List<Student>> responseType = new ParameterizedTypeReference<List<Student>>() {};
-		ResponseEntity<List<Student>> response = testRestTemplate.exchange("http://localhost:" + port + "/students?age=" + STUDENT_2.getAge(),
+		ResponseEntity<List<Student>> response = testRestTemplate.exchange(
+				"http://localhost:" + port + "/students?age=" + STUDENT_2.getAge(),
 				HttpMethod.GET,
 				null,
-				responseType);
+				responseType
+		);
 		assertThat(response.getStatusCode().value()).isEqualTo(200);
-		assertEquals(Objects.requireNonNull(response.getBody()).get(0), STUDENT_2);
+		assertEquals(excepted, response.getBody());
 	}
 
 	private void testWhenFilterByMinMaxAge() {
 		ParameterizedTypeReference<List<Student>> responseType = new ParameterizedTypeReference<List<Student>>() {};
-		ResponseEntity<List<Student>> response = testRestTemplate.exchange("http://localhost:" + port + "/students?min=" + 21 + "&max=" + 25,
+		ResponseEntity<List<Student>> response = testRestTemplate.exchange(
+				"http://localhost:" + port + "/students?min=" + 21 + "&max=" + 25,
 				HttpMethod.GET,
 				null,
-				responseType);
+				responseType
+		);
 		assertThat(response.getStatusCode().value()).isEqualTo(200);
-		assertEquals(response.getBody(), STUDENT_SORTED_LIST);
+		assertEquals(STUDENT_SORTED_LIST, response.getBody());
 	}
 
 	@Test
@@ -144,7 +164,10 @@ class StudentControllerTests {
 		studentServices.addStudent(STUDENT_4);
 
 //		When
-		ResponseEntity<Faculty> response = testRestTemplate.getForEntity("http://localhost:" + port + "/students/" + STUDENT_4.getId() + "/faculty", Faculty.class);
+		ResponseEntity<Faculty> response = testRestTemplate.getForEntity(
+				"http://localhost:" + port + "/students/" + STUDENT_4.getId() + "/faculty",
+				Faculty.class
+		);
 //		Then
 		assertThat(response.getStatusCode().value()).isEqualTo(200);
 		assertThat(Objects.requireNonNull(response.getBody())).isEqualTo(FACULTY_1);
