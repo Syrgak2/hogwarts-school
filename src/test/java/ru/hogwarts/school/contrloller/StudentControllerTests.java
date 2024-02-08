@@ -1,7 +1,6 @@
-package ru.hogwarts.school;
+package ru.hogwarts.school.contrloller;
 
 import org.assertj.core.api.Assertions;
-import org.h2.command.dml.MergeUsing;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -17,12 +16,10 @@ import org.springframework.util.MultiValueMap;
 import ru.hogwarts.school.controller.StudentController;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
-import ru.hogwarts.school.model.StudentAvatar;
 import ru.hogwarts.school.service.FacultyService;
 import ru.hogwarts.school.service.StudentAvatarService;
 import ru.hogwarts.school.service.StudentService;
 
-import javax.swing.plaf.PanelUI;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
@@ -35,7 +32,7 @@ import static ru.hogwarts.school.constans.Constants.*;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestDatabase
 @TestPropertySource(locations = "classpath:application-test.properties")
-class SchoolApplicationTests {
+class StudentControllerTests {
 	@LocalServerPort
 	private Integer port;
 
