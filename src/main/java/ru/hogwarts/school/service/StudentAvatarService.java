@@ -33,7 +33,7 @@ public class StudentAvatarService {
         this.avatarRepo = avatarRepo;
     }
 
-    public void uploadAvatar(Long studentId, MultipartFile file) throws IOException {
+    public boolean uploadAvatar(Long studentId, MultipartFile file) throws IOException {
 
         Path filePath = Path.of(avatarDir, studentId + "." + getExtension(Objects.requireNonNull(file.getOriginalFilename())));
         Files.createDirectories(filePath.getParent());
@@ -48,6 +48,7 @@ public class StudentAvatarService {
             bis.transferTo(bos);
         }
         saveAvatarToDataBase(studentId, filePath, file);
+        return true;
     }
 
     public void getAvatar(Long studentId, HttpServletResponse response) throws IOException {

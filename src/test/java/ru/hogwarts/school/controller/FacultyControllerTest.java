@@ -74,10 +74,6 @@ public class FacultyControllerTest {
 
     @Test
     public void findFacultyTest()throws Exception {
-//        Given
-        JSONObject facultyObject = new JSONObject();
-        facultyObject.put("name", FACULTY_1.getName());
-        facultyObject.put("color", FACULTY_1.getColor());
 
 //        When
         when(facultyRepository.findById(anyLong())).thenReturn(Optional.of(FACULTY_1));
