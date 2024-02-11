@@ -53,7 +53,7 @@ public class FacultyControllerTest {
     public void testCreateFaculty() throws IOException {
 //        When
         ResponseEntity<Faculty> response = testRestTemplate.postForEntity(
-                "http://localhost:" + port + "/faculty",
+                HOST + port + "/faculty",
                 FACULTY_1,
                 Faculty.class
         );
@@ -68,7 +68,7 @@ public class FacultyControllerTest {
         facultyService.addFaculty(FACULTY_1);
 //        When
         ResponseEntity<Faculty> response = testRestTemplate.getForEntity(
-                "http://localhost:" + port + "/faculty/" + FACULTY_1.getId(),
+                HOST + port + "/faculty/" + FACULTY_1.getId(),
                 Faculty.class
         );
 //        Then
@@ -83,7 +83,7 @@ public class FacultyControllerTest {
         HttpEntity<Faculty> requestEntity = new HttpEntity<>(FACULTY_1);
 //        When
         ResponseEntity<Faculty> response = testRestTemplate.exchange(
-                "http://localhost:" + port + "/faculty",
+                HOST + port + "/faculty",
                 HttpMethod.PUT,
                 requestEntity,
                 Faculty.class
@@ -98,10 +98,22 @@ public class FacultyControllerTest {
 //        Given
         facultyService.addFaculty(FACULTY_1);
 //        When
-        testRestTemplate.delete("http://localhost:" + port + "/faculty/" + FACULTY_1.getId());
-//        Then
+        ResponseEntity<Faculty> removeResponse = testRestTemplate.exchange(
+                HOST + port + "/faculty/" + FACULTY_1.getId(),
+                HttpMethod.DELETE,
+                null,
+                Faculty.class
+        );
+
+//		Then
+        assertThat(removeResponse.getStatusCode().value()).isEqualTo(200);
+
+//		Дополнительный тест
+//		Пытаемся, получить только что удаленный объект.
+//		Должно вернуть статус 500
+//		Иначе тест провален.
         ResponseEntity<Faculty> response = testRestTemplate.getForEntity(
-                "http://localhost:" + port + "/faculty/" + FACULTY_1.getId(),
+                HOST + port + "/faculty/" + FACULTY_1.getId(),
                 Faculty.class
         );
         assertThat(response.getStatusCode().value()).isEqualTo(500);
@@ -123,7 +135,7 @@ public class FacultyControllerTest {
 //        When
         ParameterizedTypeReference<List<Faculty>> responseType = new ParameterizedTypeReference<List<Faculty>>() {};
         ResponseEntity<List<Faculty>> response = testRestTemplate.exchange(
-                "http://localhost:" + port + "/faculty?name=" + FACULTY_1.getName(),
+                HOST + port + "/faculty?name=" + FACULTY_1.getName(),
                 HttpMethod.GET,
                 null,
                 responseType
@@ -137,7 +149,7 @@ public class FacultyControllerTest {
 //        When
         ParameterizedTypeReference<List<Faculty>> responseType = new ParameterizedTypeReference<List<Faculty>>() {};
         ResponseEntity<List<Faculty>> response = testRestTemplate.exchange(
-                "http://localhost:" + port + "/faculty?color=" + COLOR_FOR_FILTER,
+                HOST + port + "/faculty?color=" + COLOR_FOR_FILTER,
                 HttpMethod.GET,
                 null,
                 responseType
@@ -162,7 +174,7 @@ public class FacultyControllerTest {
 //        When
         ParameterizedTypeReference<List<Student>> responseType = new ParameterizedTypeReference<List<Student>>() {};
         ResponseEntity<List<Student>> response = testRestTemplate.exchange(
-                "http://localhost:" + port + "/faculty/" + FACULTY_1.getId() + "/students",
+                HOST + port + "/faculty/" + FACULTY_1.getId() + "/students",
                 HttpMethod.GET,
                 null,
                 responseType

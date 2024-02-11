@@ -1,6 +1,5 @@
 package ru.hogwarts.school.contrloller;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -61,7 +60,7 @@ class StudentControllerTests {
 	public void testPostStudent() throws Exception{
 //		When
 		ResponseEntity<Student> response = testRestTemplate.postForEntity(
-				"http://localhost:" + port + "/students",
+				HOST + port + "/students",
 				STUDENT_1,
 				Student.class
 		);
@@ -76,7 +75,7 @@ class StudentControllerTests {
 		studentServices.addStudent(STUDENT_1);
 //		When
 		ResponseEntity<Student> response = testRestTemplate.getForEntity(
-				"http://localhost:" + port + "/students/" + STUDENT_1.getId(),
+				HOST + port + "/students/" + STUDENT_1.getId(),
 				Student.class
 		);
 //		Then
@@ -90,7 +89,7 @@ class StudentControllerTests {
 		studentServices.addStudent(new Student(1L, "jdfskj", 1));
 //		When
 		ResponseEntity<Student> response = testRestTemplate.postForEntity(
-				"http://localhost:" + port + "/students", STUDENT_1,
+				HOST + port + "/students", STUDENT_1,
 				Student.class
 		);
 //		Then
@@ -103,10 +102,22 @@ class StudentControllerTests {
 //		given
 		studentServices.addStudent(STUDENT_1);
 //		When
-		testRestTemplate.delete("http://localhost:" + port + "/students/" + STUDENT_1.getId());
+		ResponseEntity<Student> removeResponse = testRestTemplate.exchange(
+				HOST + port + "/students/" + STUDENT_1.getId(),
+				HttpMethod.DELETE,
+				null,
+				Student.class
+		);
+
 //		Then
+		assertThat(removeResponse.getStatusCode().value()).isEqualTo(200);
+
+//		Дополнительный тест
+//		Пытаемся, получить только что удаленный объект.
+//		Должно вернуть статус 500
+//		Иначе тест провален.
 		ResponseEntity<Student> response = testRestTemplate.getForEntity(
-				"http://localhost:" + port + "/students/" + STUDENT_1.getId(),
+				HOST + port + "/students/" + STUDENT_1.getId(),
 				Student.class
 		);
 		assertThat(response.getStatusCode().value()).isEqualTo(500);
@@ -135,7 +146,7 @@ class StudentControllerTests {
 		excepted.add(STUDENT_2);
 		ParameterizedTypeReference<List<Student>> responseType = new ParameterizedTypeReference<List<Student>>() {};
 		ResponseEntity<List<Student>> response = testRestTemplate.exchange(
-				"http://localhost:" + port + "/students?age=" + STUDENT_2.getAge(),
+				HOST + port + "/students?age=" + STUDENT_2.getAge(),
 				HttpMethod.GET,
 				null,
 				responseType
@@ -147,7 +158,7 @@ class StudentControllerTests {
 	private void testWhenFilterByMinMaxAge() {
 		ParameterizedTypeReference<List<Student>> responseType = new ParameterizedTypeReference<List<Student>>() {};
 		ResponseEntity<List<Student>> response = testRestTemplate.exchange(
-				"http://localhost:" + port + "/students?min=" + 21 + "&max=" + 25,
+				HOST + port + "/students?min=" + 21 + "&max=" + 25,
 				HttpMethod.GET,
 				null,
 				responseType
@@ -165,7 +176,7 @@ class StudentControllerTests {
 
 //		When
 		ResponseEntity<Faculty> response = testRestTemplate.getForEntity(
-				"http://localhost:" + port + "/students/" + STUDENT_4.getId() + "/faculty",
+				HOST + port + "/students/" + STUDENT_4.getId() + "/faculty",
 				Faculty.class
 		);
 //		Then
@@ -204,7 +215,7 @@ class StudentControllerTests {
 
 //		When
 		ResponseEntity<String> response = testRestTemplate.postForEntity(
-				"http://localhost:" + port + "/students/" + STUDENT_4.getId() + "/avatar/post",
+				HOST + port + "/students/" + STUDENT_4.getId() + "/avatar/post",
 				requestEntity,
 				String.class
 		);
@@ -215,7 +226,7 @@ class StudentControllerTests {
 
 	private void testDownloadAvatarPreview() {
 		ResponseEntity<byte[]> response = testRestTemplate.getForEntity(
-				"http://localhost:" + port + "/students/" + STUDENT_4.getId() + "/avatar/preview",
+				HOST + port + "/students/" + STUDENT_4.getId() + "/avatar/preview",
 				byte[].class
 		);
 
@@ -224,7 +235,7 @@ class StudentControllerTests {
 
 	private void testDownloadAvatar() {
 		ResponseEntity<byte[]> response = testRestTemplate.getForEntity(
-				"http://localhost:" + port + "/students/" + STUDENT_4.getId() + "/avatar",
+				HOST + port + "/students/" + STUDENT_4.getId() + "/avatar",
 				byte[].class
 		);
 

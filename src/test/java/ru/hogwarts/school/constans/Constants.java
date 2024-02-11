@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Constants {
+    public static final String HOST = "http://localhost:";
     public static final Student STUDENT_1 = new Student(1L, "Student1", 22);
 
     public static final Student STUDENT_2 = new Student(2L, "Student2", 20);
