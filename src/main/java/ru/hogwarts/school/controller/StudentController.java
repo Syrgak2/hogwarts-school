@@ -55,7 +55,7 @@ public class StudentController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping
+    @GetMapping("/filter")
     public ResponseEntity<List<Student>> filterByAge(@RequestParam(required = false) Integer age,
                                                      @RequestParam(required = false) Integer min,
                                                      @RequestParam(required = false) Integer max) {
@@ -66,6 +66,12 @@ public class StudentController {
             return ResponseEntity.ok(studentService.findByAgeBetween(min, max));
         }
         return ResponseEntity.ok(Collections.emptyList());
+    }
+
+    @GetMapping
+    ResponseEntity<List<Student>> getStudentsByPage(@RequestParam("page") Integer pageNumber,
+                                                    @RequestParam("size") Integer pageSize) {
+        return ResponseEntity.ok(studentService.findAllStudents(pageNumber, pageSize));
     }
 
     @GetMapping("/{id}/faculty")

@@ -1,5 +1,6 @@
 package ru.hogwarts.school.service;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
@@ -53,5 +54,10 @@ public class StudentService {
 
     public List<Student> findLastFiveStudents() {
         return studentRepo.finFirst5ByOrderByIdDesc();
+    }
+
+    public List<Student> findAllStudents(Integer pageNumber, Integer pageSize) {
+        PageRequest pageRequest = PageRequest.of(pageNumber - 1, pageSize);
+        return studentRepo.findAll(pageRequest).getContent();
     }
 }
