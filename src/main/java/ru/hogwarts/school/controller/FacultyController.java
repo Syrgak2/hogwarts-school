@@ -28,7 +28,7 @@ public class FacultyController {
     }
 
     @PostMapping
-    public Faculty addFaculty(@RequestBody Faculty faculty) {
+    public Faculty createFaculty(@RequestBody Faculty faculty) {
         return service.addFaculty(faculty);
     }
 
@@ -49,7 +49,7 @@ public class FacultyController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Faculty>> filterByColor(@RequestParam(required = false) String color,
+    public ResponseEntity<List<Faculty>> filterByColorOrName(@RequestParam(required = false) String color,
                                                        @RequestParam(required = false) String name) {
         if (color != null && !color.isBlank()) {
             return ResponseEntity.ok(service.getFacultiesByColor(color));
