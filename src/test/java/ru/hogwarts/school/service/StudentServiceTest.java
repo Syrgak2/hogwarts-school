@@ -1,10 +1,14 @@
 package ru.hogwarts.school.service;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repository.StudentRepository;
 
@@ -13,14 +17,16 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static ru.hogwarts.school.constans.Constants.*;
 @ExtendWith(MockitoExtension.class)
 public class StudentServiceTest {
     @Mock
     private StudentRepository studentRepository;
+
+    @Mock
+    private PageRequest pageRequest;
 
     @InjectMocks
     private StudentService studentService;
@@ -73,5 +79,48 @@ public class StudentServiceTest {
         List<Student> excepted = studentService.findByAgeBetween(10, 22);
 //        Then
         assertEquals(STUDENT_SORTED_LIST, excepted);
+    }
+
+    @Test
+    public void testCountStudents() {
+//        Given
+        when(studentRepository.countStudents()).thenReturn(5);
+//        When
+        Integer excepted = studentService.countStudents();
+//        Then
+        assertEquals(5, excepted);
+    }
+
+    @Test
+    public void testCountAverageAge() {
+//        Given
+        when(studentRepository.countAverageAge()).thenReturn(20);
+//        When
+        Integer excepted = studentService.countAverageAge();
+//        Then
+        assertEquals(20, excepted);
+    }
+
+    @Test
+    public void testFindLastFiveStudents() {
+//        Given
+        when(studentRepository.finFirst5ByOrderByIdDesc()).thenReturn(STUDENT_SORTED_LIST);
+//        When
+        List<Student> excepted = studentService.findLastFiveStudents();
+//        Then
+        assertEquals(STUDENT_SORTED_LIST, excepted);
+    }
+
+    @Test
+    public void findAllStudents() {
+//        Given
+        PageImpl<Student> page = new PageImpl<>(STUDENT_LIST);
+
+        when(studentRepository.findAll(any(PageRequest.class))).thenReturn(page);
+//        When
+        List<Student> excepted = studentService.findAllStudents(1, 1);
+//        Then
+        assertEquals(excepted.get(0), STUDENT_LIST.get(0));
+
     }
 }
