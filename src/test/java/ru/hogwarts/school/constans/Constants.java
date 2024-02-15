@@ -2,6 +2,7 @@ package ru.hogwarts.school.constans;
 
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
+import ru.hogwarts.school.model.StudentAvatar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,5 +46,6 @@ public class Constants {
             FACULTY_2,
             FACULTY_3
     ));
+
 
 }

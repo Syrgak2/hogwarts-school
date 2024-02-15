@@ -56,7 +56,7 @@ public class StudentController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Student>> filterByAge(@RequestParam(required = false) Integer age,
+    public ResponseEntity<List<Student>> filterByAgeOrBetween(@RequestParam(required = false) Integer age,
                                                      @RequestParam(required = false) Integer min,
                                                      @RequestParam(required = false) Integer max) {
         if (age != null) {
