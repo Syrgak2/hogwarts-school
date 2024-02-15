@@ -22,13 +22,13 @@ import java.util.List;
 @RequestMapping("/students")
 public class StudentController {
     @Autowired
-    private StudentService service;
+    private StudentService studentService;
     @Autowired
     private StudentAvatarService studentAvatarService;
 
     @GetMapping("/{id}")
     public ResponseEntity<Student> getStudent(@PathVariable long id) {
-        Student student = service.findStudent(id);
+        Student student = studentService.findStudent(id);
         if (student == null) {
             return ResponseEntity.notFound().build();
         }
@@ -37,12 +37,12 @@ public class StudentController {
 
     @PostMapping
     public Student addStudent(@RequestBody Student student) {
-        return service.addStudent(student);
+        return studentService.addStudent(student);
     }
 
     @PutMapping
     public ResponseEntity<Student> editeStudent(@RequestBody Student student) {
-        Student foundStudent = service.updateStudent(student);
+        Student foundStudent = studentService.updateStudent(student);
         if (foundStudent == null) {
             return ResponseEntity.notFound().build();
         }
@@ -51,7 +51,7 @@ public class StudentController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Student> removeStudent(@PathVariable long id) {
-        service.removeStudent(id);
+        studentService.removeStudent(id);
         return ResponseEntity.ok().build();
     }
 
@@ -60,10 +60,10 @@ public class StudentController {
                                                      @RequestParam(required = false) Integer min,
                                                      @RequestParam(required = false) Integer max) {
         if (age != null) {
-            return ResponseEntity.ok(service.filterStudentByAge(age));
+            return ResponseEntity.ok(studentService.filterStudentByAge(age));
         }
         if (min != null && max != null) {
-            return ResponseEntity.ok(service.findByAgeBetween(min, max));
+            return ResponseEntity.ok(studentService.findByAgeBetween(min, max));
         }
         return ResponseEntity.ok(Collections.emptyList());
     }
@@ -71,7 +71,7 @@ public class StudentController {
     @GetMapping("/{id}/faculty")
     public ResponseEntity<Faculty> getFaculty(@PathVariable Long id) {
         if (id != null) {
-            return ResponseEntity.ok(service.getStudentsFaculty(id));
+            return ResponseEntity.ok(studentService.getStudentsFaculty(id));
         }
         return ResponseEntity.notFound().build();
     }
@@ -101,6 +101,20 @@ public class StudentController {
     @GetMapping(value = "/{id}/avatar")
     public void downloadAvatar(@PathVariable Long id, HttpServletResponse response) throws IOException {
         studentAvatarService.getAvatar(id, response);
+    }
 
+    @GetMapping("count")
+    public ResponseEntity<Integer> getAmountOfStudents() {
+        return ResponseEntity.ok(studentService.countStudents());
+    }
+
+    @GetMapping("average")
+    public ResponseEntity<Integer> getAverageAge() {
+        return ResponseEntity.ok(studentService.countAverageAge());
+    }
+
+    @GetMapping("lastStudents")
+    public ResponseEntity<List<Student>> getLAstFiveStudents() {
+        return ResponseEntity.ok(studentService.findLastFiveStudents());
     }
 }
