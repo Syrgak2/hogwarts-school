@@ -1,5 +1,7 @@
 package ru.hogwarts.school.contrloller;
 
+import org.h2.command.dml.MergeUsing;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -15,6 +17,7 @@ import org.springframework.util.MultiValueMap;
 import ru.hogwarts.school.controller.StudentController;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
+import ru.hogwarts.school.model.StudentAvatar;
 import ru.hogwarts.school.service.FacultyService;
 import ru.hogwarts.school.service.StudentAvatarService;
 import ru.hogwarts.school.service.StudentService;
@@ -23,9 +26,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static ru.hogwarts.school.constans.Constants.*;
 
 
@@ -51,6 +56,14 @@ class StudentControllerTests {
 	@Autowired
 	private TestRestTemplate testRestTemplate;
 
+	@BeforeEach
+	public void setUp() {
+		studentServices.addStudent(STUDENT_1);
+		studentServices.addStudent(STUDENT_2);
+		studentServices.addStudent(STUDENT_3);
+	}
+
+
 	@Test
 	public void contextLoads() throws Exception {
 		assertThat(studentController).isNotNull();
@@ -71,8 +84,6 @@ class StudentControllerTests {
 
 	@Test
 	public void testGetStudent() {
-//		Given
-		studentServices.addStudent(STUDENT_1);
 //		When
 		ResponseEntity<Student> response = testRestTemplate.getForEntity(
 				HOST + port + "/students/" + STUDENT_1.getId(),
@@ -99,8 +110,6 @@ class StudentControllerTests {
 
 	@Test
 	public void testRemoveStudent() {
-//		given
-		studentServices.addStudent(STUDENT_1);
 //		When
 		ResponseEntity<Student> removeResponse = testRestTemplate.exchange(
 				HOST + port + "/students/" + STUDENT_1.getId(),
@@ -126,9 +135,6 @@ class StudentControllerTests {
 	@Test
 	public void tesFilterByAge() {
 //		Given
-		studentServices.addStudent(STUDENT_1);
-		studentServices.addStudent(STUDENT_2);
-		studentServices.addStudent(STUDENT_3);
 		STUDENT_1.setFaculty(null);
 		STUDENT_2.setFaculty(null);
 		STUDENT_3.setFaculty(null);
@@ -146,7 +152,7 @@ class StudentControllerTests {
 		excepted.add(STUDENT_2);
 		ParameterizedTypeReference<List<Student>> responseType = new ParameterizedTypeReference<List<Student>>() {};
 		ResponseEntity<List<Student>> response = testRestTemplate.exchange(
-				HOST + port + "/students?age=" + STUDENT_2.getAge(),
+				HOST + port + "/students/filter?age=" + STUDENT_2.getAge(),
 				HttpMethod.GET,
 				null,
 				responseType
@@ -158,7 +164,7 @@ class StudentControllerTests {
 	private void testWhenFilterByMinMaxAge() {
 		ParameterizedTypeReference<List<Student>> responseType = new ParameterizedTypeReference<List<Student>>() {};
 		ResponseEntity<List<Student>> response = testRestTemplate.exchange(
-				HOST + port + "/students?min=" + 21 + "&max=" + 25,
+				HOST + port + "/students/filter?min=" + 21 + "&max=" + 25,
 				HttpMethod.GET,
 				null,
 				responseType
@@ -240,6 +246,50 @@ class StudentControllerTests {
 		);
 
 		assertEquals(HttpStatus.OK, response.getStatusCode());
+	}
+
+	@Test
+	public void testGetAmountOfStudents() {
+		ResponseEntity<Integer> response = testRestTemplate.getForEntity(
+				HOST + port + "students/count",
+				Integer.class
+		);
+
+		assertEquals(HttpStatus.OK, response.getStatusCode());
+		assertEquals(3, response.getBody());
+	}
+
+	@Test
+	public void testGetAverageAge() {
+//		Given
+		Integer actual = (int) STUDENT_LIST.stream()
+				.mapToInt(Student::getAge)
+				.average()
+				.orElse(0.0);
+//		When
+		ResponseEntity<Integer> response = testRestTemplate.getForEntity(
+				HOST + port + "/students/average",
+				Integer.class
+		);
+//		Then
+		assertEquals(HttpStatus.OK, response.getStatusCode());
+		assertEquals(actual, response.getBody());
+	}
+
+	@Test
+	public void testGetLastFiveStudent() {
+//		Given
+		ParameterizedTypeReference<List<Student>> responseType = new ParameterizedTypeReference<List<Student>>() {};
+//		When
+		ResponseEntity<List<Student>> response = testRestTemplate.exchange(
+				HOST + port + "/students/lastStudents",
+				HttpMethod.GET,
+				null,
+				responseType
+		);
+//		Then
+		assertEquals(HttpStatus.OK, response.getStatusCode());
+		assertEquals(STUDENT_3, Objects.requireNonNull(response.getBody()).get(0));
 	}
 
 }
