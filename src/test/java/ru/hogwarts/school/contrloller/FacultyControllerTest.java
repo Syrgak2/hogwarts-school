@@ -1,7 +1,6 @@
 package ru.hogwarts.school.contrloller;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -44,6 +43,13 @@ public class FacultyControllerTest {
     @Autowired
     private TestRestTemplate testRestTemplate;
 
+    @BeforeEach
+    public void setup() {
+        facultyService.addFaculty(FACULTY_1);
+        facultyService.addFaculty(FACULTY_2);
+        facultyService.addFaculty(FACULTY_3);
+    }
+
     @Test
     public void contextLoads() throws Exception {
         assertThat(facultyController).isNotNull();
@@ -64,11 +70,9 @@ public class FacultyControllerTest {
 
     @Test
     public void testGetFaculty() {
-//        Given
-        facultyService.addFaculty(FACULTY_1);
 //        When
         ResponseEntity<Faculty> response = testRestTemplate.getForEntity(
-                HOST + port + "/faculty/" + FACULTY_1.getId(),
+                HOST + port + "/faculty/" + 1,
                 Faculty.class
         );
 //        Then
@@ -79,8 +83,8 @@ public class FacultyControllerTest {
     @Test
     public void testEditeFaculty() {
 //        Given
-        facultyService.addFaculty(new Faculty(1L, "fasd", "adsa"));
-        HttpEntity<Faculty> requestEntity = new HttpEntity<>(FACULTY_1);
+        Faculty faculty = new Faculty(1L, "TEST", "TEST");
+        HttpEntity<Faculty> requestEntity = new HttpEntity<>(faculty);
 //        When
         ResponseEntity<Faculty> response = testRestTemplate.exchange(
                 HOST + port + "/faculty",
@@ -96,10 +100,10 @@ public class FacultyControllerTest {
     @Test
     public void tesRemoveFaculty() {
 //        Given
-        facultyService.addFaculty(FACULTY_1);
+        Faculty faculty = facultyService.findFaculty(1L);
 //        When
         ResponseEntity<Faculty> removeResponse = testRestTemplate.exchange(
-                HOST + port + "/faculty/" + FACULTY_1.getId(),
+                HOST + port + "/faculty/" + 1,
                 HttpMethod.DELETE,
                 null,
                 Faculty.class
@@ -121,14 +125,20 @@ public class FacultyControllerTest {
 
     @Test
     public void testFilterByColorOrName() {
-//        Given
-        facultyService.addFaculty(FACULTY_1);
-        facultyService.addFaculty(FACULTY_2);
-        facultyService.addFaculty(FACULTY_3);
 //        Когда передан параметр color
         testWhenFilterByColor();
 //        Когда передан параметр name
         testWhenFilterByName();
+    }
+
+    @AfterEach
+    public void tear() {
+        List<Faculty> faculties = facultyService.findAll();
+        for (int i = 1; i <= 3; i++) {
+            if (faculties.get(1) != null) {
+                facultyService.removeFaculty((long) i);
+            }
+        }
     }
 
     private void testWhenFilterByName() {
