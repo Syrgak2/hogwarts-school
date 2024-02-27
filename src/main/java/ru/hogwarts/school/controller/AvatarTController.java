@@ -23,6 +23,9 @@ public class AvatarTController {
     @GetMapping
     public ResponseEntity<List<StudentAvatar>> getAllAvatar(@RequestParam("page") Integer pageNumber,
                                                             @RequestParam("size") Integer pageSize) {
-        return ResponseEntity.ok(avatarService.findAll(pageNumber, pageSize));
+        if (pageNumber != null && pageSize != null) {
+            return ResponseEntity.ok(avatarService.findAll(pageNumber, pageSize));
+        }
+        return ResponseEntity.badRequest().build();
     }
 }
