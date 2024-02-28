@@ -72,8 +72,19 @@ public class FacultyServiceTest {
 //        Given
         when(facultyRepository.findByNameContainsIgnoreCase(anyString())).thenReturn(FACULTY_SORTED_BY_COLOR);
 //        When
-        List<Faculty> excepted = facultyService.getFacultiesByName(NAME_FOR_FILTER);
+        List<Faculty> actual = facultyService.getFacultiesByName(NAME_FOR_FILTER);
 //        Then
-        assertEquals(FACULTY_SORTED_BY_COLOR, excepted);
+        assertEquals(FACULTY_SORTED_BY_COLOR, actual);
+    }
+
+    @Test
+    public void test() {
+//        Given
+        String excepted = FACULTY_3.getName();
+        when(facultyRepository.findAll()).thenReturn(FACULTY_LIST);
+//        When
+        String actual = facultyService.getLongestName();
+//        Then
+        assertEquals(excepted, actual);
     }
 }
