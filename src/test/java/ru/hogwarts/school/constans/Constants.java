@@ -24,7 +24,8 @@ public class Constants {
     public static final List<Student> STUDENT_LIST = new ArrayList<>(List.of(
             STUDENT_1,
             STUDENT_2,
-            STUDENT_3
+            STUDENT_3,
+            STUDENT_4
     ));
 
 
