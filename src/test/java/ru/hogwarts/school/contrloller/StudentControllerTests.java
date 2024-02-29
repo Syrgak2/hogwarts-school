@@ -176,8 +176,8 @@ class StudentControllerTests {
 	@Test
 	public void testGetFaculty() {
 //		given
-		facultyService.addFaculty(FACULTY_1);
-		STUDENT_4.setFaculty(FACULTY_1);
+		facultyService.addFaculty(FACULTY_4_FOR_GET_STUDENTS);
+		STUDENT_4.setFaculty(FACULTY_4_FOR_GET_STUDENTS);
 		studentServices.addStudent(STUDENT_4);
 
 //		When
@@ -187,7 +187,7 @@ class StudentControllerTests {
 		);
 //		Then
 		assertThat(response.getStatusCode().value()).isEqualTo(200);
-		assertThat(Objects.requireNonNull(response.getBody())).isEqualTo(FACULTY_1);
+		assertThat(Objects.requireNonNull(response.getBody())).isEqualTo(FACULTY_4_FOR_GET_STUDENTS);
 	}
 
 
@@ -198,13 +198,13 @@ class StudentControllerTests {
 	@Test
 	public void testUploadGetFindAvatar() throws IOException {
 //		 Given
-		studentServices.addStudent(STUDENT_4);
+		studentServices.addStudent(STUDENT_FOR_AVATAR);
 		testUploadAvatar();
 		testDownloadAvatarPreview();
 		testDownloadAvatar();
 
 //		Удаляет файл после теста
-		avatarService.removeAvatar(STUDENT_4.getId());
+		avatarService.removeAvatar(STUDENT_FOR_AVATAR.getId());
 
 	}
 
@@ -221,7 +221,7 @@ class StudentControllerTests {
 
 //		When
 		ResponseEntity<String> response = testRestTemplate.postForEntity(
-				HOST + port + "/students/" + STUDENT_4.getId() + "/avatar/post",
+				HOST + port + "/students/" + STUDENT_FOR_AVATAR.getId() + "/avatar/post",
 				requestEntity,
 				String.class
 		);
@@ -232,7 +232,7 @@ class StudentControllerTests {
 
 	private void testDownloadAvatarPreview() {
 		ResponseEntity<byte[]> response = testRestTemplate.getForEntity(
-				HOST + port + "/students/" + STUDENT_4.getId() + "/avatar/preview",
+				HOST + port + "/students/" + STUDENT_FOR_AVATAR.getId() + "/avatar/preview",
 				byte[].class
 		);
 
@@ -241,7 +241,8 @@ class StudentControllerTests {
 
 	private void testDownloadAvatar() {
 		ResponseEntity<byte[]> response = testRestTemplate.getForEntity(
-				HOST + port + "/students/" + STUDENT_4.getId() + "/avatar",
+				HOST + port + "/students/" + STUDENT_FOR_AVATAR
+						.getId() + "/avatar",
 				byte[].class
 		);
 

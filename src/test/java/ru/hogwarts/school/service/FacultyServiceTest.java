@@ -30,31 +30,31 @@ public class FacultyServiceTest {
     @Test
     public void addFaculty() {
 //        Given
-        when(facultyRepository.save(FACULTY_1)).thenReturn(FACULTY_1);
+        when(facultyRepository.save(FACULTY_FOR_POST_PUT)).thenReturn(FACULTY_FOR_POST_PUT);
 //        When
-        Faculty excepted = facultyService.addFaculty(FACULTY_1);
+        Faculty excepted = facultyService.addFaculty(FACULTY_FOR_POST_PUT);
 //        Then
-        assertEquals(FACULTY_1, excepted);
+        assertEquals(FACULTY_FOR_POST_PUT, excepted);
     }
 
     @Test
     public void findFaculty() {
 //        Given
-        when(facultyRepository.findById(FACULTY_1.getId())).thenReturn(Optional.of(FACULTY_1));
+        when(facultyRepository.findById(FACULTY_FOR_POST_PUT.getId())).thenReturn(Optional.of(FACULTY_FOR_POST_PUT));
 //        When
-        Faculty excepted = facultyService.findFaculty(FACULTY_1.getId());
+        Faculty excepted = facultyService.findFaculty(FACULTY_FOR_POST_PUT.getId());
 //        Then
-        assertEquals(FACULTY_1, excepted);
+        assertEquals(FACULTY_FOR_POST_PUT, excepted);
     }
 
     @Test
     public void updateFaculty() {
 //        Given
-        when(facultyRepository.save(FACULTY_1)).thenReturn(FACULTY_1);
+        when(facultyRepository.save(FACULTY_FOR_POST_PUT)).thenReturn(FACULTY_FOR_POST_PUT);
 //        When
-        Faculty excepted = facultyService.updateFaculty(FACULTY_1);
+        Faculty excepted = facultyService.updateFaculty(FACULTY_FOR_POST_PUT);
 //        Then
-        assertEquals(FACULTY_1, excepted);
+        assertEquals(FACULTY_FOR_POST_PUT, excepted);
     }
 
     @Test
@@ -62,7 +62,7 @@ public class FacultyServiceTest {
 //        Given
         when(facultyRepository.findByColorContainsIgnoreCase(anyString())).thenReturn(FACULTY_SORTED_BY_COLOR);
 //        When
-        List<Faculty> excepted = facultyService.getFacultiesByColor(COLOR_FOR_FILTER);
+        List<Faculty> excepted = facultyService.getFacultiesByColor(FACULTY_3_FOR_FILTER.getColor());
 //        Then
         assertEquals(FACULTY_SORTED_BY_COLOR, excepted);
     }
@@ -72,7 +72,7 @@ public class FacultyServiceTest {
 //        Given
         when(facultyRepository.findByNameContainsIgnoreCase(anyString())).thenReturn(FACULTY_SORTED_BY_COLOR);
 //        When
-        List<Faculty> excepted = facultyService.getFacultiesByName(NAME_FOR_FILTER);
+        List<Faculty> excepted = facultyService.getFacultiesByName(FACULTY_3_FOR_FILTER.getName());
 //        Then
         assertEquals(FACULTY_SORTED_BY_COLOR, excepted);
     }

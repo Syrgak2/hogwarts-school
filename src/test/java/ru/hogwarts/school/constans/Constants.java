@@ -14,7 +14,7 @@ public class Constants {
     public static final Student STUDENT_3 = new Student(3L, "Student3", 22);
 
     public static final Student STUDENT_4 = new Student(4L, "Student4", 18);
-    public static final Student STUDENT_FOR_EDITE = new Student(1L, "StudentForUpdate", 25);
+    public static final Student STUDENT_FOR_AVATAR = new Student(5L, "StudentForUpdate", 18);
 
     public static final List<Student> STUDENT_SORTED_LIST = new ArrayList<>(List.of(
             STUDENT_1,
@@ -25,26 +25,24 @@ public class Constants {
             STUDENT_1,
             STUDENT_2,
             STUDENT_3,
-            STUDENT_4
+            STUDENT_4,
+            STUDENT_FOR_AVATAR
     ));
 
 
-    public static final Faculty FACULTY_1 = new Faculty(1L, "Faculty1", "gold");
-    public static final Faculty FACULTY_2 = new Faculty(2L, "Faculty2", "blue");
-    public static final Faculty FACULTY_3 = new Faculty(3L, "Faculty1", "gold");
-    public static final Faculty FACULTY_FOR_EDITE = new Faculty(1L, "FacultyForEdite", "black");
-    public static final String COLOR_FOR_FILTER = "gold";
-    public static final String NAME_FOR_FILTER = "Faculty1";
+    public static final Faculty FACULTY_FOR_POST_PUT = new Faculty(1L, "Faculty1", "gold");
+    public static final Faculty FACULTY_2_FOR_REMOVE = new Faculty(2L, "Faculty2", "blue");
+    public static final Faculty FACULTY_3_FOR_FILTER = new Faculty(3L, "Faculty3", "black");
+    public static final Faculty FACULTY_4_FOR_GET_STUDENTS = new Faculty(4L, "Faculty4", "green");
 
     public static final List<Faculty> FACULTY_SORTED_BY_COLOR = new ArrayList<>(List.of(
-            FACULTY_1,
-            FACULTY_3
+            FACULTY_3_FOR_FILTER
     ));
 
     public static final List<Faculty> FACULTY_LIST = new ArrayList<>(List.of(
-            FACULTY_1,
-            FACULTY_2,
-            FACULTY_3
+            FACULTY_FOR_POST_PUT,
+            FACULTY_2_FOR_REMOVE,
+            FACULTY_3_FOR_FILTER
     ));
 
 }

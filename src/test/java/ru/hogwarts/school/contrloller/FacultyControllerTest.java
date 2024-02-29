@@ -43,13 +43,6 @@ public class FacultyControllerTest {
     @Autowired
     private TestRestTemplate testRestTemplate;
 
-    @BeforeEach
-    public void setup() {
-        facultyService.addFaculty(FACULTY_1);
-        facultyService.addFaculty(FACULTY_2);
-        facultyService.addFaculty(FACULTY_3);
-    }
-
     @Test
     public void contextLoads() throws Exception {
         assertThat(facultyController).isNotNull();
@@ -60,12 +53,12 @@ public class FacultyControllerTest {
 //        When
         ResponseEntity<Faculty> response = testRestTemplate.postForEntity(
                 HOST + port + "/faculty",
-                FACULTY_1,
+                FACULTY_FOR_POST_PUT,
                 Faculty.class
         );
 //       Then
         assertEquals(HttpStatus.OK,response.getStatusCode());
-        assertEquals(FACULTY_1, response.getBody());
+        assertEquals(FACULTY_FOR_POST_PUT, response.getBody());
     }
 
     @Test
@@ -77,7 +70,7 @@ public class FacultyControllerTest {
         );
 //        Then
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(FACULTY_1, response.getBody());
+        assertEquals(FACULTY_FOR_POST_PUT, response.getBody());
     }
 
     @Test
@@ -94,16 +87,17 @@ public class FacultyControllerTest {
         );
 //        Then
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(FACULTY_1, response.getBody());
+        assertEquals(faculty, response.getBody());
     }
 
     @Test
     public void tesRemoveFaculty() {
 //        Given
-        Faculty faculty = facultyService.findFaculty(1L);
+        facultyService.addFaculty(FACULTY_2_FOR_REMOVE);
+        Long id = facultyService.getFacultiesByName(FACULTY_2_FOR_REMOVE.getName()).get(0).getId();
 //        When
         ResponseEntity<Faculty> removeResponse = testRestTemplate.exchange(
-                HOST + port + "/faculty/" + 1,
+                HOST + port + "/faculty/" + id,
                 HttpMethod.DELETE,
                 null,
                 Faculty.class
@@ -117,7 +111,7 @@ public class FacultyControllerTest {
 //		Должно вернуть статус 500
 //		Иначе тест провален.
         ResponseEntity<Faculty> response = testRestTemplate.getForEntity(
-                HOST + port + "/faculty/" + FACULTY_1.getId(),
+                HOST + port + "/faculty/" + FACULTY_2_FOR_REMOVE.getId(),
                 Faculty.class
         );
         assertThat(response.getStatusCode().value()).isEqualTo(500);
@@ -125,41 +119,35 @@ public class FacultyControllerTest {
 
     @Test
     public void testFilterByColorOrName() {
+//        Given
+        facultyService.addFaculty(FACULTY_3_FOR_FILTER);
 //        Когда передан параметр color
         testWhenFilterByColor();
 //        Когда передан параметр name
         testWhenFilterByName();
     }
 
-    @AfterEach
-    public void tear() {
-        List<Faculty> faculties = facultyService.findAll();
-        for (int i = 1; i <= 3; i++) {
-            if (faculties.get(1) != null) {
-                facultyService.removeFaculty((long) i);
-            }
-        }
-    }
-
     private void testWhenFilterByName() {
 //        When
         ParameterizedTypeReference<List<Faculty>> responseType = new ParameterizedTypeReference<List<Faculty>>() {};
         ResponseEntity<List<Faculty>> response = testRestTemplate.exchange(
-                HOST + port + "/faculty?name=" + FACULTY_1.getName(),
+                HOST + port + "/faculty?name=" + FACULTY_3_FOR_FILTER.getName(),
                 HttpMethod.GET,
                 null,
                 responseType
         );
 //        Then
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(FACULTY_1, Objects.requireNonNull(response.getBody()).get(0));
+        assertEquals(FACULTY_3_FOR_FILTER, Objects.requireNonNull(response.getBody()).get(0));
     }
 
     private void testWhenFilterByColor() {
+//        Given
+
 //        When
         ParameterizedTypeReference<List<Faculty>> responseType = new ParameterizedTypeReference<List<Faculty>>() {};
         ResponseEntity<List<Faculty>> response = testRestTemplate.exchange(
-                HOST + port + "/faculty?color=" + COLOR_FOR_FILTER,
+                HOST + port + "/faculty?color=" + FACULTY_3_FOR_FILTER.getColor(),
                 HttpMethod.GET,
                 null,
                 responseType
@@ -172,19 +160,16 @@ public class FacultyControllerTest {
     @Test
     public void testGetStudents() {
 //        Given
-        facultyService.addFaculty(FACULTY_1);
-        STUDENT_2.setFaculty(FACULTY_1);
-        STUDENT_1.setFaculty(FACULTY_1);
-        studentService.addStudent(STUDENT_1);
-        studentService.addStudent(STUDENT_2);
+        facultyService.addFaculty(FACULTY_4_FOR_GET_STUDENTS);
+        STUDENT_4.setFaculty(FACULTY_4_FOR_GET_STUDENTS);
+        studentService.addStudent(STUDENT_4);
         List<Student> students = new ArrayList<>();
-        students.add(STUDENT_1);
-        students.add(STUDENT_2);
+        students.add(STUDENT_4);
 
 //        When
         ParameterizedTypeReference<List<Student>> responseType = new ParameterizedTypeReference<List<Student>>() {};
         ResponseEntity<List<Student>> response = testRestTemplate.exchange(
-                HOST + port + "/faculty/" + FACULTY_1.getId() + "/students",
+                HOST + port + "/faculty/" + FACULTY_4_FOR_GET_STUDENTS.getId() + "/students",
                 HttpMethod.GET,
                 null,
                 responseType
