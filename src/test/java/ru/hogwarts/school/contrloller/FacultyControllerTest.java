@@ -179,4 +179,21 @@ public class FacultyControllerTest {
         assertEquals(students, response.getBody());
 
     }
+
+    @Test
+    public void getLongestFacultyNameTest() {
+//        Given
+        facultyService.addFaculty(FACULTY_3_FOR_FILTER);
+        String excepted = FACULTY_3_FOR_FILTER.getName();
+//        When
+        ResponseEntity<String> response = testRestTemplate.exchange(
+                HOST + port + "/faculty/longestName",
+                HttpMethod.GET,
+                null,
+                String.class
+        );
+//        Then
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(excepted, response.getBody());
+    }
 }

@@ -81,7 +81,7 @@ public class FacultyServiceTest {
     @Test
     public void getLongestNameTest() {
 //        Given
-        String excepted = FACULTY_3.getName();
+        String excepted = FACULTY_3_FOR_FILTER.getName();
         when(facultyRepository.findAll()).thenReturn(FACULTY_LIST);
 //        When
         String actual = facultyService.getLongestName();

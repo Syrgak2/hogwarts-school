@@ -23,6 +23,7 @@ import ru.hogwarts.school.service.StudentAvatarService;
 import ru.hogwarts.school.service.StudentService;
 
 import java.io.IOException;
+import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -292,4 +293,36 @@ class StudentControllerTests {
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 	}
 
+	@Test
+	public void getAllStartsWithATest() {
+//		Given
+		ParameterizedTypeReference<List<Student>> responseType = new ParameterizedTypeReference<List<Student>>() {};
+//		When
+		ResponseEntity<List<Student>> response = testRestTemplate.exchange(
+				HOST + port + "/students/startsWithA",
+				HttpMethod.GET,
+				null,
+				responseType
+		);
+//		Then
+		assertEquals(STUDENT_NAME_START_A, response.getBody());
+	}
+
+	@Test
+	public void GetAverageAgeStreamTest() {
+//		Given
+		List<Student> students = studentServices.findAll();
+		Double excepted = students.stream()
+				.mapToInt(Student::getAge)
+				.average()
+				.orElse(0.0);
+//		When
+		ResponseEntity<Double> response = testRestTemplate.getForEntity(
+				HOST + port + "/students/averageAge",
+				Double.class
+		);
+//		Then
+		assertEquals(HttpStatus.OK, response.getStatusCode());
+		assertEquals(excepted, response.getBody());
+	}
 }
