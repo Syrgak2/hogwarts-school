@@ -1,5 +1,7 @@
 package ru.hogwarts.school.service;
 
+import org.hibernate.Hibernate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,8 @@ import java.util.stream.Collectors;
 @Service
 public class FacultyService {
     private FacultyRepository facultyRepo;
+    @Autowired
+    StudentService studentService;
 
     Logger logger = LoggerFactory.getLogger(FacultyService.class);
 
@@ -42,7 +46,13 @@ public class FacultyService {
     }
 
     public void removeFaculty(Long id) {
-        logger.trace("Wos invoked method for remove faculty");
+              logger.trace("Wos invoked method for remove faculty");
+        Faculty faculty = findFaculty(id);
+        List<Student> students = faculty.getStudents();
+        for (Student element : students) {
+            element.setFaculty(null);
+        }
+        studentService.saveAll(students);
         facultyRepo.deleteById(id);
     }
 

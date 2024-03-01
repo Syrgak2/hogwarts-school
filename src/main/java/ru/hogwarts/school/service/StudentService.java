@@ -26,6 +26,10 @@ public class StudentService {
         return studentRepo.save(student);
     }
 
+    public List<Student> saveAll(List<Student> students) {
+        return studentRepo.saveAll(students);
+    }
+
     public Student findStudent(long id) {
         logger.trace("Wos invoked method for find student");
         return studentRepo.findById(id).get();

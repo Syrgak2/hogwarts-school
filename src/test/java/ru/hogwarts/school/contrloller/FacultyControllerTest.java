@@ -1,7 +1,6 @@
 package ru.hogwarts.school.contrloller;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -54,33 +53,31 @@ public class FacultyControllerTest {
 //        When
         ResponseEntity<Faculty> response = testRestTemplate.postForEntity(
                 HOST + port + "/faculty",
-                FACULTY_1,
+                FACULTY_FOR_POST_PUT,
                 Faculty.class
         );
 //       Then
         assertEquals(HttpStatus.OK,response.getStatusCode());
-        assertEquals(FACULTY_1, response.getBody());
+        assertEquals(FACULTY_FOR_POST_PUT, response.getBody());
     }
 
     @Test
     public void testGetFaculty() {
-//        Given
-        facultyService.addFaculty(FACULTY_1);
 //        When
         ResponseEntity<Faculty> response = testRestTemplate.getForEntity(
-                HOST + port + "/faculty/" + FACULTY_1.getId(),
+                HOST + port + "/faculty/" + 1,
                 Faculty.class
         );
 //        Then
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(FACULTY_1, response.getBody());
+        assertEquals(FACULTY_FOR_POST_PUT, response.getBody());
     }
 
     @Test
     public void testEditeFaculty() {
 //        Given
-        facultyService.addFaculty(new Faculty(1L, "fasd", "adsa"));
-        HttpEntity<Faculty> requestEntity = new HttpEntity<>(FACULTY_1);
+        Faculty faculty = new Faculty(1L, "TEST", "TEST");
+        HttpEntity<Faculty> requestEntity = new HttpEntity<>(faculty);
 //        When
         ResponseEntity<Faculty> response = testRestTemplate.exchange(
                 HOST + port + "/faculty",
@@ -90,16 +87,17 @@ public class FacultyControllerTest {
         );
 //        Then
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(FACULTY_1, response.getBody());
+        assertEquals(faculty, response.getBody());
     }
 
     @Test
     public void tesRemoveFaculty() {
 //        Given
-        facultyService.addFaculty(FACULTY_1);
+        facultyService.addFaculty(FACULTY_2_FOR_REMOVE);
+        Long id = facultyService.getFacultiesByName(FACULTY_2_FOR_REMOVE.getName()).get(0).getId();
 //        When
         ResponseEntity<Faculty> removeResponse = testRestTemplate.exchange(
-                HOST + port + "/faculty/" + FACULTY_1.getId(),
+                HOST + port + "/faculty/" + id,
                 HttpMethod.DELETE,
                 null,
                 Faculty.class
@@ -113,7 +111,7 @@ public class FacultyControllerTest {
 //		Должно вернуть статус 500
 //		Иначе тест провален.
         ResponseEntity<Faculty> response = testRestTemplate.getForEntity(
-                HOST + port + "/faculty/" + FACULTY_1.getId(),
+                HOST + port + "/faculty/" + FACULTY_2_FOR_REMOVE.getId(),
                 Faculty.class
         );
         assertThat(response.getStatusCode().value()).isEqualTo(500);
@@ -122,9 +120,7 @@ public class FacultyControllerTest {
     @Test
     public void testFilterByColorOrName() {
 //        Given
-        facultyService.addFaculty(FACULTY_1);
-        facultyService.addFaculty(FACULTY_2);
-        facultyService.addFaculty(FACULTY_3);
+        facultyService.addFaculty(FACULTY_3_FOR_FILTER);
 //        Когда передан параметр color
         testWhenFilterByColor();
 //        Когда передан параметр name
@@ -135,21 +131,23 @@ public class FacultyControllerTest {
 //        When
         ParameterizedTypeReference<List<Faculty>> responseType = new ParameterizedTypeReference<List<Faculty>>() {};
         ResponseEntity<List<Faculty>> response = testRestTemplate.exchange(
-                HOST + port + "/faculty?name=" + FACULTY_1.getName(),
+                HOST + port + "/faculty?name=" + FACULTY_3_FOR_FILTER.getName(),
                 HttpMethod.GET,
                 null,
                 responseType
         );
 //        Then
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(FACULTY_1, Objects.requireNonNull(response.getBody()).get(0));
+        assertEquals(FACULTY_3_FOR_FILTER, Objects.requireNonNull(response.getBody()).get(0));
     }
 
     private void testWhenFilterByColor() {
+//        Given
+
 //        When
         ParameterizedTypeReference<List<Faculty>> responseType = new ParameterizedTypeReference<List<Faculty>>() {};
         ResponseEntity<List<Faculty>> response = testRestTemplate.exchange(
-                HOST + port + "/faculty?color=" + COLOR_FOR_FILTER,
+                HOST + port + "/faculty?color=" + FACULTY_3_FOR_FILTER.getColor(),
                 HttpMethod.GET,
                 null,
                 responseType
@@ -162,19 +160,16 @@ public class FacultyControllerTest {
     @Test
     public void testGetStudents() {
 //        Given
-        facultyService.addFaculty(FACULTY_1);
-        STUDENT_2.setFaculty(FACULTY_1);
-        STUDENT_1.setFaculty(FACULTY_1);
-        studentService.addStudent(STUDENT_1);
-        studentService.addStudent(STUDENT_2);
+        facultyService.addFaculty(FACULTY_4_FOR_GET_STUDENTS);
+        STUDENT_4.setFaculty(FACULTY_4_FOR_GET_STUDENTS);
+        studentService.addStudent(STUDENT_4);
         List<Student> students = new ArrayList<>();
-        students.add(STUDENT_1);
-        students.add(STUDENT_2);
+        students.add(STUDENT_4);
 
 //        When
         ParameterizedTypeReference<List<Student>> responseType = new ParameterizedTypeReference<List<Student>>() {};
         ResponseEntity<List<Student>> response = testRestTemplate.exchange(
-                HOST + port + "/faculty/" + FACULTY_1.getId() + "/students",
+                HOST + port + "/faculty/" + FACULTY_4_FOR_GET_STUDENTS.getId() + "/students",
                 HttpMethod.GET,
                 null,
                 responseType
