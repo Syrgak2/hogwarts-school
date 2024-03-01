@@ -21,4 +21,7 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
 
     @Query(value = "SELECT * FROM student ORDER BY id DESC LIMIT 5", nativeQuery = true)
     List<Student> finFirst5ByOrderByIdDesc();
+
+    @Query(value = "SELECT * FROM student WHERE UPPER(SUBSTRING(name, 1, 1)) = 'A'", nativeQuery = true)
+    List<Student> findWhoseNameStartsA();
 }
