@@ -1,6 +1,5 @@
 package ru.hogwarts.school.service;
 
-import com.sun.tools.javac.Main;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
@@ -19,6 +18,8 @@ public class StudentService {
 
     private final Object flag = new Object();
 
+//    счетчик id students во время работы метода
+//    ID увеличивается после работы каждого потока.
     public Integer countId = 0;
     Logger logger = LoggerFactory.getLogger(StudentService.class);
 
@@ -109,39 +110,39 @@ public class StudentService {
     }
 
     public void printNameParallel() {
-        System.out.println(printName(1) + " stream main");
-        System.out.println(printName(2) + " stream main");
+        System.out.println(Thread.currentThread().getName() + getName(1));
+        System.out.println(Thread.currentThread().getName() + getName(2));
 
         new Thread(() -> {
-            System.out.println(printName(3) + " stream 2");
-            System.out.println(printName(4) + " stream 2");
+            System.out.println(Thread.currentThread().getName() + getName(3));
+            System.out.println(Thread.currentThread().getName() + getName(4));
         }).start();
 
         new Thread(() -> {
-            System.out.println(printName(5) + " stream 3");
-            System.out.println(printName(6) + " stream 3");
+            System.out.println(Thread.currentThread().getName() + getName(5));
+            System.out.println(Thread.currentThread().getName() + getName(6));
         }).start();
 
     }
 
-    private String printName(int id) {
+    private String getName(int id) {
         List<Student> students = findAll();
         return students.get(id).getName();
     }
 
 
     public void printNameSynchronized() {
-        printSynchronized("1");
-        printSynchronized("1");
+        printSynchronized(Thread.currentThread().getName());
+        printSynchronized(Thread.currentThread().getName());
 
         new Thread(() -> {
-            printSynchronized("2");
-            printSynchronized("2");
+            printSynchronized(Thread.currentThread().getName());
+            printSynchronized(Thread.currentThread().getName());
         }).start();
 
         new Thread(() -> {
-            printSynchronized("3");
-            printSynchronized("3");
+            printSynchronized(Thread.currentThread().getName());
+            printSynchronized(Thread.currentThread().getName());
         }).start();
     }
 
