@@ -129,7 +129,7 @@ public class StudentServiceTest {
 //        Given
 //         Меняет 'a' в имени студента на 'A' для проверки
         STUDENT_NAME_START_A.get(2).setName("AStudent3");
-        when(studentRepository.findWhoseNameStartsA()).thenReturn(STUDENT_NAME_START_A);
+        when(studentRepository.findAll()).thenReturn(STUDENT_NAME_START_A);
 //        When
         List<Student> actual = studentService.findWhoseNameStartsA();
 //        Then

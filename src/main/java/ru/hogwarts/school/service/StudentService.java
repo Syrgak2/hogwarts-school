@@ -86,10 +86,8 @@ public class StudentService {
     }
 
     public List<Student> findWhoseNameStartsA() {
-//        Фильтрация происходит на уровне базы данных.
-//        Метод findWhoseNameStartsA возвращает отфильтрованный список студентов.
-//        Имя которых начинается на а или А
-        return studentRepo.findWhoseNameStartsA().stream()
+        return studentRepo.findAll().stream()
+                .filter(student -> student.getName().toUpperCase().startsWith("A"))
                 .map(student -> {
                     String capitalized = student.getName().substring(0, 1).toUpperCase() + student.getName().substring(1);
                     student.setName(capitalized);
