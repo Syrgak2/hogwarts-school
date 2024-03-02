@@ -86,13 +86,15 @@ public class StudentService {
     }
 
     public List<Student> findWhoseNameStartsA() {
-//        Сортировку вынес на уровень бд
+//        Фильтрация происходит на уровне базы данных.
+//        Метод findWhoseNameStartsA возвращает отфильтрованный список студентов.
+//        Имя которых начинается на а или А
         return studentRepo.findWhoseNameStartsA().stream()
-                .peek(student -> {
+                .map(student -> {
                     String capitalized = student.getName().substring(0, 1).toUpperCase() + student.getName().substring(1);
                     student.setName(capitalized);
+                    return student;
                 })
-                .sorted(Comparator.comparing(Student::getName))
                 .collect(Collectors.toList());
     }
 
