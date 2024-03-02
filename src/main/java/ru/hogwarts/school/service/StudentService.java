@@ -1,5 +1,6 @@
 package ru.hogwarts.school.service;
 
+import com.sun.tools.javac.Main;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
@@ -15,6 +16,10 @@ import java.util.stream.Collectors;
 @Service
 public class StudentService {
     private final StudentRepository studentRepo;
+
+    private final Object flag = new Object();
+
+    public Integer countId = 0;
     Logger logger = LoggerFactory.getLogger(StudentService.class);
 
     public StudentService(StudentRepository studentRepo) {
@@ -102,4 +107,51 @@ public class StudentService {
                 .average()
                 .orElse(0);
     }
+
+    public void printNameParallel() {
+        System.out.println(printName(1) + " stream main");
+        System.out.println(printName(2) + " stream main");
+
+        new Thread(() -> {
+            System.out.println(printName(3) + " stream 2");
+            System.out.println(printName(4) + " stream 2");
+        }).start();
+
+        new Thread(() -> {
+            System.out.println(printName(5) + " stream 3");
+            System.out.println(printName(6) + " stream 3");
+        }).start();
+
+    }
+
+    private String printName(int id) {
+        List<Student> students = findAll();
+        return students.get(id).getName();
+    }
+
+
+    public void printNameSynchronized() {
+        printSynchronized("1");
+        printSynchronized("1");
+
+        new Thread(() -> {
+            printSynchronized("2");
+            printSynchronized("2");
+        }).start();
+
+        new Thread(() -> {
+            printSynchronized("3");
+            printSynchronized("3");
+        }).start();
+    }
+
+    private void printSynchronized(String streamId) {
+        List<Student> students = findAll();
+        synchronized (flag) {
+            countId++;
+        }
+        System.out.println(students.get(countId).getName() + " " + countId + " " + streamId);
+    }
+
+
 }

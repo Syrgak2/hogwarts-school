@@ -119,12 +119,12 @@ public class StudentController {
         return ResponseEntity.ok(studentService.countAverageAge());
     }
 
-    @GetMapping("/lastStudents")
+    @GetMapping("/last-students")
     public ResponseEntity<List<Student>> getLAstFiveStudents() {
         return ResponseEntity.ok(studentService.findLastFiveStudents());
     }
 
-    @GetMapping("/startsWithA")
+    @GetMapping("/starts-withA")
     public ResponseEntity<List<Student>> getAllStartsWithA() {
         return ResponseEntity.ok(studentService.findWhoseNameStartsA());
     }
@@ -133,5 +133,15 @@ public class StudentController {
     @GetMapping("/averageAge")
     public ResponseEntity<Double> contAverageAge() {
         return ResponseEntity.ok(studentService.getAverageAge());
+    }
+
+    @GetMapping("/print-parallel")
+    public void printParallelAllStudentsName() {
+        studentService.printNameParallel();
+    }
+
+    @GetMapping("/print-synchronized")
+    public void printNameSynchronized() {
+        studentService.printNameSynchronized();
     }
 }
