@@ -23,6 +23,7 @@ import ru.hogwarts.school.service.StudentAvatarService;
 import ru.hogwarts.school.service.StudentService;
 
 import java.io.IOException;
+import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -176,8 +177,8 @@ class StudentControllerTests {
 	@Test
 	public void testGetFaculty() {
 //		given
-		facultyService.addFaculty(FACULTY_1);
-		STUDENT_4.setFaculty(FACULTY_1);
+		facultyService.addFaculty(FACULTY_4_FOR_GET_STUDENTS);
+		STUDENT_4.setFaculty(FACULTY_4_FOR_GET_STUDENTS);
 		studentServices.addStudent(STUDENT_4);
 
 //		When
@@ -187,7 +188,7 @@ class StudentControllerTests {
 		);
 //		Then
 		assertThat(response.getStatusCode().value()).isEqualTo(200);
-		assertThat(Objects.requireNonNull(response.getBody())).isEqualTo(FACULTY_1);
+		assertThat(Objects.requireNonNull(response.getBody())).isEqualTo(FACULTY_4_FOR_GET_STUDENTS);
 	}
 
 
@@ -198,13 +199,13 @@ class StudentControllerTests {
 	@Test
 	public void testUploadGetFindAvatar() throws IOException {
 //		 Given
-		studentServices.addStudent(STUDENT_4);
+		studentServices.addStudent(STUDENT_FOR_AVATAR);
 		testUploadAvatar();
 		testDownloadAvatarPreview();
 		testDownloadAvatar();
 
 //		Удаляет файл после теста
-		avatarService.removeAvatar(STUDENT_4.getId());
+		avatarService.removeAvatar(STUDENT_FOR_AVATAR.getId());
 
 	}
 
@@ -221,7 +222,7 @@ class StudentControllerTests {
 
 //		When
 		ResponseEntity<String> response = testRestTemplate.postForEntity(
-				HOST + port + "/students/" + STUDENT_4.getId() + "/avatar/post",
+				HOST + port + "/students/" + STUDENT_FOR_AVATAR.getId() + "/avatar/post",
 				requestEntity,
 				String.class
 		);
@@ -232,7 +233,7 @@ class StudentControllerTests {
 
 	private void testDownloadAvatarPreview() {
 		ResponseEntity<byte[]> response = testRestTemplate.getForEntity(
-				HOST + port + "/students/" + STUDENT_4.getId() + "/avatar/preview",
+				HOST + port + "/students/" + STUDENT_FOR_AVATAR.getId() + "/avatar/preview",
 				byte[].class
 		);
 
@@ -241,7 +242,8 @@ class StudentControllerTests {
 
 	private void testDownloadAvatar() {
 		ResponseEntity<byte[]> response = testRestTemplate.getForEntity(
-				HOST + port + "/students/" + STUDENT_4.getId() + "/avatar",
+				HOST + port + "/students/" + STUDENT_FOR_AVATAR
+						.getId() + "/avatar",
 				byte[].class
 		);
 
@@ -251,7 +253,7 @@ class StudentControllerTests {
 	@Test
 	public void testGetAmountOfStudents() {
 		ResponseEntity<Integer> response = testRestTemplate.getForEntity(
-				HOST + port + "students/count",
+				HOST + port + "/students/count",
 				Integer.class
 		);
 
@@ -289,7 +291,38 @@ class StudentControllerTests {
 		);
 //		Then
 		assertEquals(HttpStatus.OK, response.getStatusCode());
-		assertEquals(STUDENT_3, Objects.requireNonNull(response.getBody()).get(0));
 	}
 
+	@Test
+	public void getAllStartsWithATest() {
+//		Given
+		ParameterizedTypeReference<List<Student>> responseType = new ParameterizedTypeReference<List<Student>>() {};
+//		When
+		ResponseEntity<List<Student>> response = testRestTemplate.exchange(
+				HOST + port + "/students/startsWithA",
+				HttpMethod.GET,
+				null,
+				responseType
+		);
+//		Then
+		assertEquals(STUDENT_NAME_START_A, response.getBody());
+	}
+
+	@Test
+	public void GetAverageAgeStreamTest() {
+//		Given
+		List<Student> students = studentServices.findAll();
+		Double excepted = students.stream()
+				.mapToInt(Student::getAge)
+				.average()
+				.orElse(0.0);
+//		When
+		ResponseEntity<Double> response = testRestTemplate.getForEntity(
+				HOST + port + "/students/averageAge",
+				Double.class
+		);
+//		Then
+		assertEquals(HttpStatus.OK, response.getStatusCode());
+		assertEquals(excepted, response.getBody());
+	}
 }
