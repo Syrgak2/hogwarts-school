@@ -1,6 +1,7 @@
 package ru.hogwarts.school.service;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
+import org.h2.command.dml.MergeUsing;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -112,7 +113,7 @@ public class StudentServiceTest {
     }
 
     @Test
-    public void findAllStudents() {
+    public void findAllStudentsTest() {
 //        Given
         PageImpl<Student> page = new PageImpl<>(STUDENT_LIST);
 
@@ -121,6 +122,32 @@ public class StudentServiceTest {
         List<Student> excepted = studentService.findAllStudents(1, 1);
 //        Then
         assertEquals(excepted.get(0), STUDENT_LIST.get(0));
+    }
 
+    @Test
+    public void FindWhoseNameStartATest() {
+//        Given
+//         Меняет 'a' в имени студента на 'A' для проверки
+        STUDENT_NAME_START_A.get(2).setName("AStudent3");
+        when(studentRepository.findAll()).thenReturn(STUDENT_NAME_START_A);
+//        When
+        List<Student> actual = studentService.findWhoseNameStartsA();
+//        Then
+        assertEquals(STUDENT_NAME_START_A, actual);
+    }
+
+    @Test
+    public void getAverageAgeTest() {
+//        Given
+        double sum = 0;
+        for (Student student : STUDENT_LIST) {
+            sum += student.getAge();
+        }
+        Double excepted = sum / STUDENT_LIST.size();
+        when(studentRepository.findAll()).thenReturn(STUDENT_LIST);
+//        when
+        double actual = studentService.getAverageAge();
+//        Then
+        assertEquals(excepted, actual);
     }
 }
